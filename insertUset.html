@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Update User</title>
+    <title>Insert User</title>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -25,14 +25,13 @@
             margin-right: 10px;
         }
     </style>
-
 </head>
 
 <body>
 
-    <h2>Chi tiết User</h2>
+    <h2>Thêm User mới</h2>
 
-    <form id="userForm">
+    <form id="insertForm">
 
         <input type="text" id="firstName" placeholder="First name"><br>
         <input type="text" id="lastName" placeholder="Last name"><br>
@@ -57,48 +56,14 @@
             <option value="Denied">Denied</option>
         </select><br>
 
-        <button type="button" id="updateBtn">Update user</button>
+        <button type="button" id="insertBtn">Thêm mới</button>
         <button type="button" id="cancelBtn">Hủy</button>
 
     </form>
 
     <script>
         // 🔹 CONFIG API
-        const API_URL = "https://your-api-server.com/users";
-        // ⚠️ Thay bằng API thật của bạn (không dùng Google Drive vì chỉ đọc)
-
-        // 🔹 Lấy id từ URL
-        function getId() {
-            let params = new URLSearchParams(window.location.search);
-            return params.get("id");
-        }
-
-        let userId = getId();
-
-        // 🔹 Load dữ liệu user
-        function loadUser() {
-            $.ajax({
-                url: API_URL + "/" + userId,
-                method: "GET",
-                success: function (user) {
-                    if (!user) {
-                        alert("Không tìm thấy user");
-                        return;
-                    }
-
-                    $("#firstName").val(user.firstName);
-                    $("#lastName").val(user.lastName);
-                    $("#subject").val(user.subject);
-
-                    $("#country").val(user.country);
-                    $("#customerType").val(user.customerType);
-                    $("#registerStatus").val(user.registerStatus);
-                },
-                error: function () {
-                    alert("Lỗi khi tải dữ liệu user");
-                }
-            });
-        }
+        const API_URL = "https://drive.google.com/uc?id=1Pfj0RqmIoCOIqPmAnC3E7BI-ClmkAfr-";
 
         // 🔹 Validate dữ liệu
         function validateUser(user) {
@@ -109,11 +74,10 @@
             return true;
         }
 
-        // 🔹 Update user
-        $("#updateBtn").click(function () {
+        // 🔹 Thêm mới user
+        $("#insertBtn").click(function () {
 
-            let updatedUser = {
-                id: userId,
+            let newUser = {
                 firstName: $("#firstName").val(),
                 lastName: $("#lastName").val(),
                 subject: $("#subject").val(),
@@ -122,24 +86,25 @@
                 registerStatus: $("#registerStatus").val()
             };
 
-            if (!validateUser(updatedUser)) return;
+            if (!validateUser(newUser)) return;
 
-            console.log("User update:", updatedUser);
+            console.log("User insert:", newUser);
 
+            // ⚠️ API Google Drive chỉ READ-ONLY
+            // => giả lập gọi ajax post
             $.ajax({
-                url: API_URL + "/" + userId,
-                method: "PUT",   // hoặc PATCH tùy API
-                contentType: "application/json",
-                data: JSON.stringify(updatedUser),
+                url: API_URL,
+                method: "POST",
+                data: JSON.stringify(newUser),
                 success: function (response) {
-                    alert("Update thành công!");
+                    alert("Thêm user thành công (giả lập)");
                     console.log("Response:", response);
 
-                    // quay lại list
+                    // quay lại danh sách
                     window.location.href = "users.html";
                 },
-                error: function (xhr) {
-                    alert("Update thất bại: " + xhr.status);
+                error: function () {
+                    alert("Thêm user thất bại (giả lập)");
                 }
             });
         });
@@ -148,13 +113,7 @@
         $("#cancelBtn").click(function () {
             window.location.href = "users.html";
         });
-
-        // 🔹 Run
-        $(document).ready(function () {
-            loadUser();
-        });
     </script>
-
 
 </body>
 
