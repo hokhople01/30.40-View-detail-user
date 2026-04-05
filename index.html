@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Update User</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        input,
+        select {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 200px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h2>Chi tiết User</h2>
+
+    <form>
+
+        <input type="text" id="firstName" placeholder="First name"><br>
+        <input type="text" id="lastName" placeholder="Last name"><br>
+        <input type="text" id="subject" placeholder="Subject"><br>
+
+        <select id="country">
+            <option value="VN">Việt Nam</option>
+            <option value="USA">USA</option>
+            <option value="AUS">Australia</option>
+            <option value="CAN">Canada</option>
+        </select><br>
+
+        <select id="customerType">
+            <option value="Standard">Standard</option>
+            <option value="Gold">Gold</option>
+            <option value="Premium">Premium</option>
+        </select><br>
+
+        <select id="registerStatus">
+            <option value="New">New</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Denied">Denied</option>
+        </select><br>
+
+    </form>
+
+    <script>
+
+        // 🔹 Lấy id từ URL
+        function getIdFromUrl() {
+            let params = new URLSearchParams(window.location.search);
+            return params.get("id");
+        }
+
+        let userId = getIdFromUrl();
+
+        // 🔹 Gọi API (demo giả lập)
+        function getUserById(id) {
+
+            // Fake API data (thay bằng API thật nếu có)
+            let users = [
+                { id: 4474, firstName: "Tran", lastName: "The Hien", subject: "Student", country: "VN", customerType: "Standard", registerStatus: "Accepted" },
+                { id: 4475, firstName: "Hoa", lastName: "Nguyen", subject: "Student", country: "USA", customerType: "Gold", registerStatus: "Accepted" }
+            ];
+
+            return users.find(u => u.id == id);
+        }
+
+        // 🔹 Đổ dữ liệu lên form
+        function loadUser() {
+
+            let user = getUserById(userId);
+
+            if (!user) {
+                alert("Không tìm thấy user");
+                return;
+            }
+
+            $("#firstName").val(user.firstName);
+            $("#lastName").val(user.lastName);
+            $("#subject").val(user.subject);
+
+            $("#country").val(user.country);
+            $("#customerType").val(user.customerType);
+            $("#registerStatus").val(user.registerStatus);
+        }
+
+        $(document).ready(function () {
+            loadUser();
+        });
+
+    </script>
+
+</body>
+
+</html>
