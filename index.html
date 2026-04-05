@@ -16,8 +16,13 @@
         input,
         select {
             margin-bottom: 10px;
-            padding: 5px;
-            width: 200px;
+            padding: 6px;
+            width: 250px;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin-right: 10px;
         }
     </style>
 
@@ -27,7 +32,7 @@
 
     <h2>Chi tiết User</h2>
 
-    <form>
+    <form id="userForm">
 
         <input type="text" id="firstName" placeholder="First name"><br>
         <input type="text" id="lastName" placeholder="Last name"><br>
@@ -52,49 +57,81 @@
             <option value="Denied">Denied</option>
         </select><br>
 
+        <button type="button" id="updateBtn">Update user</button>
+        <button type="button" id="cancelBtn">Hủy</button>
+
     </form>
 
     <script>
 
+        // 🔹 CONFIG API
+        const API_URL = "https://drive.google.com/uc?id=1Pfj0RqmIoCOIqPmAnC3E7BI-ClmkAfr-";
+
         // 🔹 Lấy id từ URL
-        function getIdFromUrl() {
+        function getId() {
             let params = new URLSearchParams(window.location.search);
             return params.get("id");
         }
 
-        let userId = getIdFromUrl();
+        let userId = getId();
 
-        // 🔹 Gọi API (demo giả lập)
-        function getUserById(id) {
-
-            // Fake API data (thay bằng API thật nếu có)
-            let users = [
-                { id: 4474, firstName: "Tran", lastName: "The Hien", subject: "Student", country: "VN", customerType: "Standard", registerStatus: "Accepted" },
-                { id: 4475, firstName: "Hoa", lastName: "Nguyen", subject: "Student", country: "USA", customerType: "Gold", registerStatus: "Accepted" }
-            ];
-
-            return users.find(u => u.id == id);
-        }
-
-        // 🔹 Đổ dữ liệu lên form
+        // 🔹 Load dữ liệu user
         function loadUser() {
 
-            let user = getUserById(userId);
+            $.ajax({
+                url: API_URL,
+                method: "GET",
+                success: function (data) {
 
-            if (!user) {
-                alert("Không tìm thấy user");
-                return;
-            }
+                    // data là mảng users
+                    let user = data.find(u => u.id == userId);
 
-            $("#firstName").val(user.firstName);
-            $("#lastName").val(user.lastName);
-            $("#subject").val(user.subject);
+                    if (!user) {
+                        alert("Không tìm thấy user");
+                        return;
+                    }
 
-            $("#country").val(user.country);
-            $("#customerType").val(user.customerType);
-            $("#registerStatus").val(user.registerStatus);
+                    $("#firstName").val(user.firstName);
+                    $("#lastName").val(user.lastName);
+                    $("#subject").val(user.subject);
+
+                    $("#country").val(user.country);
+                    $("#customerType").val(user.customerType);
+                    $("#registerStatus").val(user.registerStatus);
+                }
+            });
         }
 
+        // 🔹 Update user
+        $("#updateBtn").click(function () {
+
+            let updatedUser = {
+                id: userId,
+                firstName: $("#firstName").val(),
+                lastName: $("#lastName").val(),
+                subject: $("#subject").val(),
+                country: $("#country").val(),
+                customerType: $("#customerType").val(),
+                registerStatus: $("#registerStatus").val()
+            };
+
+            console.log("User update:", updatedUser);
+
+            // ⚠️ Vì API từ Google Drive là READ-ONLY
+            // => giả lập update (in ra console)
+
+            alert("Update thành công ");
+
+            // quay lại list
+            window.location.href = "users.html";
+        });
+
+        // 🔹 Hủy
+        $("#cancelBtn").click(function () {
+            window.location.href = "users.html";
+        });
+
+        // 🔹 Run
         $(document).ready(function () {
             loadUser();
         });
