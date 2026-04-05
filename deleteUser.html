@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách Users</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        button {
+            padding: 6px 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Danh sách người dùng</h2>
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Subject</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const API_URL = "https://your-api-server.com/users"; // ⚠️ thay bằng API thật
+
+        // 🔹 Load danh sách users
+        function loadUsers() {
+            $.ajax({
+                url: API_URL,
+                method: "GET",
+                success: function (data) {
+                    let rows = "";
+                    data.forEach(u => {
+                        rows += `
+                <tr>
+                    <td>${u.id}</td>
+                    <td>${u.firstName}</td>
+                    <td>${u.lastName}</td>
+                    <td>${u.subject}</td>
+                    <td>
+                        <button onclick="deleteUser('${u.id}')">Xóa</button>
+                        <button onclick="window.location.href='updateUser.html?id=${u.id}'">Sửa</button>
+                    </td>
+                </tr>`;
+                    });
+                    $("#userTable tbody").html(rows);
+                }
+            });
+        }
+
+        // 🔹 Xóa user
+        function deleteUser(id) {
+            if (confirm("Bạn có chắc chắn muốn xóa user này?")) {
+                console.log("Delete user id:", id);
+
+                $.ajax({
+                    url: API_URL + "/" + id,
+                    method: "DELETE",
+                    success: function (response) {
+                        alert("Xóa user thành công!");
+                        console.log("Response:", response);
+
+                        // reload danh sách
+                        loadUsers();
+                    },
+                    error: function (xhr) {
+                        alert("Xóa user thất bại: " + xhr.status);
+                    }
+                });
+            }
+        }
+
+        // 🔹 Run
+        $(document).ready(function () {
+            loadUsers();
+        });
+    </script>
+
+</body>
+
+</html>
